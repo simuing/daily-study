@@ -1,0 +1,17 @@
+{
+  "name": "gilp-app",
+  "version": "1.0.0",
+  "description": "Learn Gulp by building an awsome development enviorment",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "gulp dev",
+    "build": "gulp build"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "@babel/core": "^7.19.3",
+    "@babel/preset-env": "^7.19.4",
+    "@babel/register": "^7.18.9"
+  }
+}
