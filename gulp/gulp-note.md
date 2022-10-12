@@ -226,9 +226,13 @@ export const pug = () =>
     .pipe(gpug())
     .pipe(gulp.dest(routes.pug.dest));
 
-export const clean = await deleteAsync(["build"]); // new
+const clean = await deleteAsync(["build"]);
 
-export const dev = gulp.series([clean, pug]); // update
+const prepare = gulp.series([clean]);
+
+const assets = gulp.series([pug]);
+
+export const dev = gulp.series([prepare, assets]);
 ```
 
 update package.json

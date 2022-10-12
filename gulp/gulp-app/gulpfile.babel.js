@@ -15,6 +15,10 @@ export const pug = () =>
     .pipe(gpug())
     .pipe(gulp.dest(routes.pug.dest));
 
-export const clean = await deleteAsync(["build"]);
+const clean = await deleteAsync(["build"]);
 
-export const dev = gulp.series([clean, pug]);
+const prepare = gulp.series([clean]);
+
+const assets = gulp.series([pug]);
+
+export const dev = gulp.series([prepare, assets]);
