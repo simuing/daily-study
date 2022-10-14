@@ -5,10 +5,13 @@ Leverage gulp and the flexibility of JavaScript to automate slow, repetitive wor
 - https://gulpjs.com/
 - https://nomadcoders.co/gulp-for-beginners/lectures/1632
 
-gulp-image
 
-mos 
-```
-brew install libjpeg libpng on macOS
-apt-get install -y libjpeg libpng on Ubuntu
-```
+##### gulp library
+- gulp: build
+- gulp-pug: for pug compile
+- gulp-image: for image compile
+- gulp-sass: for sass compile
+- gulp-webserver: for webserver deploy
+- gulp-autoprefixer: issues with the output should be reported on the Autoprefixer 
+- gulp-csso: minify CSS
+- del: for file Mng.
