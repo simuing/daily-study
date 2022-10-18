@@ -1,10 +1,6 @@
-## React Next.js - Cookie Based Secure Authentication System
-
-https://www.udemy.com/course/react-cookie-based-authentication/
-
-<br/>
-
+# React Next.js - Cookie Based Secure Authentication System
 ## Certificate
+https://www.udemy.com/course/react-cookie-based-authentication/
 ![Certificate of completion](./Certificate.jpg)
 
 <br/>
@@ -61,9 +57,6 @@ useEffect(() => {
 }, []);
 ```
 
-<br/>
-
-### Verify token and get current user
 
 
 
