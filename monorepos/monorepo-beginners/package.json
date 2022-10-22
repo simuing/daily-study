@@ -11,5 +11,8 @@
     "nohoist": [
       "**/lodash"
     ]
+  },
+  "scripts": {
+    "start": "module-b"
   }
 }
