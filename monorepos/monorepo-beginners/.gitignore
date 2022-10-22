@@ -1,0 +1,5 @@
+/node_modules
+yarn.lock
+
+/packages/module-a/node_modules
+/packages/module-b/node_modules
