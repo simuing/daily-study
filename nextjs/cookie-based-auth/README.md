@@ -5,7 +5,7 @@ https://www.udemy.com/course/react-cookie-based-authentication/
 
 <br/>
 
-## Notes
+## Study Note
 
 ### What is CSRF(Cross-site request forgery)?
 https://portswigger.net/web-security/csrf

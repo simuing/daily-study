@@ -1,6 +1,12 @@
 # Monorepos - A Beginner's Guide
 https://www.udemy.com/course/monorepos-a-beginners-guide/
 
+## Certificate
+![Certificate of completion](./Certificate.png)
+<br>
+
+# Study Note
+
 ## Monorepo
 - An architectual solution for managing multiple applications and libraries
 - Used by Google and Facebook
