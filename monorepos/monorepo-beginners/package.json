@@ -9,7 +9,7 @@
       "packages/*"
     ],
     "nohoist": [
-      "**/lodash"
+      "**/react"
     ]
   },
   "scripts": {

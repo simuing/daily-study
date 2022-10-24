@@ -1,10 +1,12 @@
 {
-  "name": "module-b",
+  "name": "@monorepo-beginners/module-b",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "dependencies": {
-    "lodash": "^4.17.21"
+  "bin": {
+    "mdb": "./index.js"
   },
-  "bin": "./index.js"
+  "scripts": {
+    "build": "node ./index.js"
+  }
 }
