@@ -1,0 +1,204 @@
+# 1장 애플리케이션을 빈틈없이 실행하고 우아하게 종료하기
+
+최근의 소프트웨어 개발 및 운영 트렌드는 `zero defect` 에서 `fault tolerance`으로 빠르게 변화했다. 이러한 트렌드 변화에서 클라우드 서비스와 쿠버네티스의 역할은 두드러졌다.
+
+- `'잘 모르겠지만 일단 껐다 켠다'`
+- '쿠버네티스는 마스터 노드(master node)와 워커 노드(worker node)의 조합'으로 볼 수 있다.
+- 쿠버네티스는 스스로를 컨테이너 오케스트레이션 도구라고 정의한다.
+
+<br/>
+
+#### 단어 알고 가기
+
+##### 무결함 (zero defect)
+
+단 하나의 문제도 발생하지 않도록 한다
+
+##### 결함 허용 (fault tolerance)
+
+결함이나 장애가 발생하여도 정상적 혹은 부분적으로 기능을 수행할 수 있다
+
+##### 로드 밸런싱 (load balancing)
+
+애플리케이션을 지원하는 리소스 풀 전체에 네트워크 트래픽을 균등하게 배포하는 방법
+
+##### 셀프 힐링 (self-healing)
+
+예상하지 못한 애플리케이션의 종료에 대응하여 새로운 애플리케이션을 알아서 실행
+
+##### 파드 (pod)
+
+쿠버네티스에서 실행하기 위해 배포 가능한 가장 작은 컴퓨팅 단위
+
+<br/>
+
+<br/>
+
+### 1.1 평범하게 애플리케이션 켜고 끄기
+
+#### 1.1.1 명령어를 이용한 애플리케이션 실행과 종료
+
+###### Prepare files
+
+chapter1/Dockerfile
+
+```dockerfile
+FROM node:14
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD [ "node", "app.mjs" ]
+```
+
+chapter1/app.mjs
+
+```js
+import express from "express";
+
+import connectToDatabase from "./helpers.mjs";
+
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("<h2>Hi there!</h2>");
+});
+
+await connectToDatabase();
+
+app.listen(3000);
+```
+
+chapter1/app.mjs
+
+```js
+{
+  "name": "docker-chapter1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
+
+```
+
+#### docker build
+
+```cmd
+$ docker build . -t my-app:1.0.0
+```
+
+#### docker run
+
+```cmd
+$ docker run -p3000:3000 --name my-app my-app:1.0.0
+```
+
+#### docker stop
+
+```cmd
+$ docker stop my-app
+```
+
+<br/>
+
+#### 1.1.2 쿠버네티스를 이용한 애플리케이션의 실행과 종료
+
+만들어진 애플리케이션을 실행하면 프로세스가 되고, 만들어진 이미지를 실행하면 컨테이너가 되는 것처럼 쿠버네티스에서 실행되는 애플리케이션은 파드(pod)가 된다.
+
+파드(pod)는 쿠버네티스에서 실행하기 위해 배포 가능한 가장 작은 컴퓨팅 단위이다.
+
+##### chapter1/my-pod.yaml
+
+```yaml
+apiVersion: v1 #(1)
+kind: Pod #(2)
+metadata:
+  name: my-pod #(3)
+spec:
+  containers: #(4)
+    - name: my-container #(5)
+      image: my-app:1.0.0 #(6)
+      ports:
+        - containerPort: 3000 #(7)
+```
+
+(1) 이 파일이 정의하는 오브젝트의 버전, 파드는 항상 v1이다.
+(2) 이 아래에 정의한 명세가 파드임을 의미
+(3) 생성할 파드의 이름
+(4) 일반적으로 하나의 파드는 하나의 컨테이너를 가지지만 필요에 따라 다수의 컨테이너를 정의할 수 있다.
+(5) 정의할 컨테이너의 이름
+(6) 컨터이너가 사용할 이미지의 이름과 태그
+(7) 컨테이너가 외부에 노출한 포트가 있다면 명시
+
+파드를 정의했다면 다음과 같은 명령어로 쿠버네티스에 애플리케이션을 띄울 수 있다.
+
+```cmd
+$ kubectl apply -f my-pod.yaml
+pod/my-pod created
+```
+
+```
+# windows 10 에선 아래와 같은 에러가 출력될 수 있다.
+Unable to connect to the server: dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refused it.
+
+해결방법: Docker Desktop > Settings > Kubernetes > Enable Kubernetes > Enable Kubernetes
+```
+
+실행한 파드를 종료하려면 다음 명령어를 사용한다.
+
+```
+$ kubectl delete pods my-pod
+```
+
+<br/>
+
+### 1.2 쿠버네티스 파드의 생애주기
+
+#### 1.2.1 쿠버네티스가 파드를 실행하는 방법
+
+쿠버네티스는 스스로를 컨테이너 오케스트레이션 도구라고 정의한다. 이는 사용자가 `kubectl apply` 명령어를 전달했을 때 컨테이너 혹은 컨테이너의 실행에 필요한 환경의 구성을모두 처리해 주기 때문이다.
+
+`kubectl apply`는 쿠버네티스에 적용하고 싶은 오브젝트의 명세를 전달하는 명령어이다. 예를 들어 이 명령어를 이용해 쿠버네티스에 파드 명세를 전달해 주면 쿠버네티스는 파드를 생성하거나 생성한 파드를 명세에 맞게 수정한다.
+
+이때 명세에 적혀 있지 않은 값은 관례에 의해 기본값을 사용하거나 상황에 따른 최적의 값으로 대체하여 파드를 생성한다. 개발자들은 최소한의 정보만 쿠버네티스에 전달하면 된다.
+
+쿠버네티스 시스템의 구성은 매우 단순하게 표현하자면 `쿠버네티스는 마스터 노드(master node)와 워커 노드(worker node)의 조합`으로 볼 수 있다.
+
+- 워커 노드(worker node): 파드(pod) 단위로 포장된 애플리케이션이 실제로 올라가는 노드
+- 마스터 노드(master node): `kubectl apply`와 같은 명령을 전달받아서 적당한 워커 노드를 찾아서 파드(pod)를 올리고 그 상태를 관리하는 노드
+- 쿠버네티스 클러스터(Kubernetes Cluster): 마스터 노드와 워커 노드를 모두 합쳐서 쿠버네티스 클러스터라고 지칭한다.
+
+##### 쿠버네티스 클러스터의 파드 실행 순서
+
+1. 마스터 노드에 파드를 생성해 달라는 요청을 전달
+2. 마스터 노드에 위치한 쿠버네티스 스케줄러(Kubernetes Scheduler)는 해당 파드를 실행하기에 적당한 워커 노드를 선택
+3. 쿠버네티스는 각 워커 노드에서 파드의 관리를 담당하는 에이전트인 `kubelet`에 파드의 명세를 전달
+4. `kubelet`은 전달받은 명세에 기술된 컨테이너 이미지를 다운로드한 뒤 워커 노드에서 실행
+5. 실행 과정이 모두 정상적으로 이루어진 경우 쿠버네티스는 파드를 Running 상태로 표시
+
+```
+$ kubectl apply -f my-pod.yaml
+pod/my-pod created
+
+$ kubectl get pods
+NAME     READY   STATUS    RESTARTS   AGE
+my-pod   1/1     Running   0          6s
+```
+
+<br/>
+
+#### 1.2.2 파드의 실행이 실패했을 경우 쿠버네티스의 동작
