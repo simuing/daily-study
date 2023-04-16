@@ -1,0 +1,17 @@
+GCP AWS BKP
+
+chapter 1 ~ 2 study note
+
+kubelet -> Pod 관리를 담당하는
+
+RDB 는 물리서버, 물리적으로 연결되기에 
+
+오픈스텍
+
+ReplicaSet 은 Master Node 의 컨트롤러
+
+젠킨스 롤백 플랜 가능할지 확인하기
+
+이미지는 다 있고, 파드에 반영
+
+찾아보기 숙제: BKP 문서에서 쿠버네티스 생명주기 관리 정책 찾아보기
