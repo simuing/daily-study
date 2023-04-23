@@ -3,8 +3,9 @@ kind: Service
 metadata:
   name: my-service
 spec:
+  type: LoadBalancer
   selector:
-    type: backend
+    app: this-is-my-app
   ports:
   - protocol: TCP
     port: 3000
